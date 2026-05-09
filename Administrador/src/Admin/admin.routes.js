@@ -16,16 +16,17 @@ import {
 
 const router = Router();
 
-// Rutas GET
+// 1. RUTAS SIN PARÁMETROS DINÁMICOS (O con prefijos específicos)
 router.get('/', getAdmins);
-router.get('/:id', validateGetAdminById, getAdminById);
-
-// Rutas POST
 router.post('/', validateCreateAdmin, createAdmin);
 
-// Rutas PUT
+// 2. RUTAS PATCH (Acciones específicas)
+// Al estar aquí, Express las encontrará antes de confundir 'deactivate' con un ':id'
+router.patch('/deactivate/:id', validateAdminStatusChange, changeAdminStatus);
+router.patch('/activate/:id', validateAdminStatusChange, changeAdminStatus);
+
+// 3. RUTAS CON PARÁMETROS DINÁMICOS GENÉRICOS (SIEMPRE AL FINAL)
+router.get('/:id', validateGetAdminById, getAdminById);
 router.put('/:id', validateUpdateAdmin, updateAdmin);
-router.put('/:id/activate', validateAdminStatusChange, changeAdminStatus);
-router.put('/:id/desactivate', validateAdminStatusChange, changeAdminStatus);
 
 export default router;

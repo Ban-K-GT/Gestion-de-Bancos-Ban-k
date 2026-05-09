@@ -1,11 +1,8 @@
 const cordOptions = {
-    //Permite que cualquier origen accede a la API
-    orgin: true,
-    //Permite que la API RECIBA Y ENVIE cookies
+    // ERROR AQUÍ: Decía 'orgin'. Debe ser 'origin'
+    origin: true, 
     credentials: true,
-    //Establece los metodos permitidos en la Api
-    methods: "GET,POST,PUT,DELETE",
-
+    methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
     allowedHeaders: "Content-Type,Authorization"
 }
 
