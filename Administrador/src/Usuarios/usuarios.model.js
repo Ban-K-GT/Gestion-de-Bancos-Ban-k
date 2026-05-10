@@ -1,4 +1,4 @@
-'user strict';
+'use strict';
 
 import mongoose, { mongo } from 'mongoose';
 
@@ -11,10 +11,6 @@ const UsuarioSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    },
-    password: {
-        type: String,
-        required: true
     },
     phone: {
         type: String,
@@ -45,10 +41,7 @@ const UsuarioSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    isActive: {
-        type: Boolean,
-        default: true
-    },
+ isActive: { type: Boolean, default: true },
 });
 
 UsuarioSchema.index({ isActive: 1 })
