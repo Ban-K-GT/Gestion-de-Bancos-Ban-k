@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import {
     getPrestamos,
+    getPrestamosAprobados,
     getPrestamosPendientes,
     getPrestamoById,
     getPrestamosByCuenta,
     changePrestamoStatus,
+    getPrestamosDenegados
 } from './prestamos.controller.js';
 import {
     validatePrestamoId,
@@ -16,8 +18,14 @@ const router = Router();
 // listar todos los préstamos
 router.get('/', getPrestamos);
 
+// listar aprobados
+router.get('/aprobados', getPrestamosAprobados);
+
 // listar pendientes
 router.get('/pendientes', getPrestamosPendientes);
+
+// listar denegados
+router.get('/denegados', getPrestamosDenegados);
 
 // obtener por id
 router.get('/:id', validatePrestamoId, getPrestamoById);

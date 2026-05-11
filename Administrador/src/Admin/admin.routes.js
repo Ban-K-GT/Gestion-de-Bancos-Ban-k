@@ -13,6 +13,7 @@ import {
     validateAdminStatusChange,
     validateGetAdminById
 } from '../../middlewares/admin-validation.js';
+import { validateJWT } from '../../middlewares/validate-JWT.js';
 
 const router = Router();
 
@@ -21,11 +22,11 @@ router.get('/', getAdmins);
 router.get('/:id', validateGetAdminById, getAdminById);
 
 // Rutas POST
-router.post('/', validateCreateAdmin, createAdmin);
+router.post('/', validateJWT, validateCreateAdmin, createAdmin);
 
 // Rutas PUT
-router.put('/:id', validateUpdateAdmin, updateAdmin);
-router.put('/:id/activate', validateAdminStatusChange, changeAdminStatus);
-router.put('/:id/desactivate', validateAdminStatusChange, changeAdminStatus);
+router.put('/:id', validateJWT, validateUpdateAdmin, updateAdmin);
+router.put('/:id/activate', validateJWT, validateAdminStatusChange, changeAdminStatus);
+router.put('/:id/desactivate', validateJWT, validateAdminStatusChange, changeAdminStatus);
 
 export default router;

@@ -67,6 +67,76 @@ export const getPrestamosPendientes = async (req, res) => {
   }
 };
 
+// Listar préstamos aprobados
+export const getPrestamosAprobados = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const filter = { estado: 'aprobado' };
+
+    const prestamos = await Prestamos.find(filter)
+      .populate('cuentaId', 'numeroCuenta tipoCuenta usuarioId')
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ fecha: -1 });
+
+    const total = await Prestamos.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      message: 'Préstamos aprobados obtenidos exitosamente',
+      data: prestamos,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalRecords: total,
+        limit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener préstamos aprobados',
+      error: error.message,
+    });
+  }
+};
+
+
+// Listar préstamos denegados
+export const getPrestamosDenegados = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const filter = { estado: 'rechazado' };
+
+    const prestamos = await Prestamos.find(filter)
+      .populate('cuentaId', 'numeroCuenta tipoCuenta usuarioId')
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ fecha: -1 });
+
+    const total = await Prestamos.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      message: 'Préstamos denegados obtenidos exitosamente',
+      data: prestamos,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalRecords: total,
+        limit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener préstamos denegados',
+      error: error.message,
+    });
+  }
+};
+
+
 // Obtener préstamo por ID
 export const getPrestamoById = async (req, res) => {
   try {

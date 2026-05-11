@@ -4,9 +4,13 @@ import Usuarios from '../usuarios/usuarios.model.js';
 // Obtener todas las cuentas con paginación y filtros
 export const getCuentas = async (req, res) => {
   try {
-    const { page = 1, limit = 10, isActive = true } = req.query;
+    const { page = 1, limit = 10, isActive } = req.query;
 
-    const filter = { isActive };
+    let filter = {};
+
+    if (isActive !== undefined) {
+      filter.isActive = isActive === 'true';
+    }
 
     const options = {
       page: parseInt(page),
