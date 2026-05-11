@@ -18,7 +18,6 @@ const router = Router();
 ========================================= */
 router.post(
     '/',
-    validateJWT,
     validateCreateCompra,
     crearCompra
 );

@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { validateJWT } from '../../middlewares/validate-jwt.js';
 import {
     crearPrestamo,
     obtenerPrestamosUsuario,
@@ -9,12 +8,12 @@ import {
 const router = Router();
 
 // Crear préstamo
-router.post('/', validateJWT, crearPrestamo);
+router.post('/', crearPrestamo);
 
 // Obtener préstamos del usuario logueado
-router.get('/mis-prestamos', validateJWT, obtenerPrestamosUsuario);
+router.get('/mis-prestamos', obtenerPrestamosUsuario);
 
 // Obtener préstamos por número de cuenta
-router.get('/mis-prestamos/:numeroCuenta', validateJWT, obtenerPrestamosPorCuenta);
+router.get('/mis-prestamos/:numeroCuenta', obtenerPrestamosPorCuenta);
 
 export default router;

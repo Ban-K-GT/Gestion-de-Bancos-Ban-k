@@ -43,12 +43,6 @@ export const crearTransaccion = async (req, res) => {
             });
         }
 
-        if (cuentaOrigen.usuarioId.toString() !== req.uid) {
-            return res.status(403).json({
-                success: false,
-                message: 'No tienes permiso para usar esta cuenta'
-            });
-        }
 
         if (!cuentaOrigen.isActive || !cuentaDestino.isActive) {
             return res.status(400).json({
@@ -78,8 +72,8 @@ export const crearTransaccion = async (req, res) => {
         await cuentaDestino.save();
 
         const nuevaTransaccion = new Transacciones({
-            idFromUsuario: cuentaOrigen._id,
-            idToUsuario: cuentaDestino._id,
+            numeroCuentaOrigen: cuentaOrigen.numeroCuenta,
+            numeroCuentaDestino: cuentaDestino.numeroCuenta,
             amount,
             type: type || 'transferencia',
             description: description || 'sin descripción'

@@ -13,7 +13,6 @@ const router = Router();
 
 router.post(
     '/transferir/:numeroCuentaOrigen',
-    validateJWT,
     crearTransaccion
 );
 
