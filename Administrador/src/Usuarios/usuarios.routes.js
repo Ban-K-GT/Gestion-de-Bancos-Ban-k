@@ -13,9 +13,9 @@ import { validateJWT } from '../../middlewares/validate-JWT.js';
 
 const router = Router();
 router.get('/', getUsuarios);
-router.post('/', validateJWT, createUsuario);
-router.put('/status/:id', validateJWT, changeUsuarioStatus);
+router.post('/', createUsuario);
+router.put('/status/:id', changeUsuarioStatus);
 router.get('/:id', validateUsuarioId, getUsuarioById);
-router.put('/:id', validateJWT, validateUsuarioId, updateUsuario);
+router.put('/:id', validateUsuarioId, updateUsuario);
 
 export default router;

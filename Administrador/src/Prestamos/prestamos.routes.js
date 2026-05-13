@@ -5,7 +5,8 @@ import {
     getPrestamosPendientes,
     getPrestamoById,
     getPrestamosByCuenta,
-    changePrestamoStatus,
+    aprobarPrestamo,
+    denegarPrestamo,
     getPrestamosDenegados
 } from './prestamos.controller.js';
 import {
@@ -34,7 +35,7 @@ router.get('/:id', validatePrestamoId, getPrestamoById);
 router.get('/cuenta/:numeroCuenta', validatePrestamosByCuenta, getPrestamosByCuenta);
 
 // aprobar o rechazar préstamo
-router.put('/:id/aprobar', validatePrestamoId, changePrestamoStatus);
-router.put('/:id/denegar', validatePrestamoId, changePrestamoStatus);
+router.put('/:id/aprobar', validatePrestamoId, aprobarPrestamo);
+router.put('/:id/denegar', validatePrestamoId, denegarPrestamo);
 
 export default router;

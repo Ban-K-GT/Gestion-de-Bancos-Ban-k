@@ -211,16 +211,19 @@ export const getPrestamosByCuenta = async (req, res) => {
 };
 
 // Cambiar estado de préstamo (aprobar o rechazar)
-export const changePrestamoStatus = async (req, res) => {
+export const aprobarPrestamo = async (req, res) => {
   try {
     const { id } = req.params;
-    const action = req.url.includes('/aprobar') ? 'aprobado' : 'rechazado';
-
     const prestamo = await Prestamos.findByIdAndUpdate(
       id,
-      { estado: action },
+      { estado: 'aprobado' },
       { new: true }
     );
+
+    // Actualizar el saldo de la cuenta
+    const cuenta = await mongoose.model('Cuentas').findById(prestamo.cuentaId);
+    cuenta.saldo += prestamo.cantidad_prestada;
+    await cuenta.save();
 
     if (!prestamo) {
       return res.status(404).json({
@@ -228,16 +231,43 @@ export const changePrestamoStatus = async (req, res) => {
         message: 'Préstamo no encontrado',
       });
     }
-
     res.status(200).json({
       success: true,
-      message: `Préstamo ${action} exitosamente`,
+      message: 'Préstamo aprobado exitosamente',
       data: prestamo,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al cambiar el estado del préstamo',
+      message: 'Error al aprobar el préstamo',
+      error: error.message,
+    });
+  }
+};
+
+export const denegarPrestamo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const prestamo = await Prestamos.findByIdAndUpdate(
+      id,
+      { estado: 'rechazado' },
+      { new: true }
+    );
+    if (!prestamo) {
+      return res.status(404).json({
+        success: false,
+        message: 'Préstamo no encontrado',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Préstamo denegado exitosamente',
+      data: prestamo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al denegar el préstamo',
       error: error.message,
     });
   }

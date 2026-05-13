@@ -112,6 +112,14 @@ export const createCuenta = async (req, res) => {
   try {
     const cuentaData = req.body;
 
+    const usuario = await Usuarios.findById(cuentaData.usuarioId);
+    if (usuario.monthly_income < 100) {
+      return res.status(404).json({
+        success: false,
+        message: 'El usuario no cumple con los requisitos para crear una cuenta',
+      });
+    }
+
     // Generar un número de cuenta único y aleatorio de 10 a 12 dígitos
     cuentaData.numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000).toString();
 
