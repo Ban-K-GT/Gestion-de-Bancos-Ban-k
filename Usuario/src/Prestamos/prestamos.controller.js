@@ -24,14 +24,6 @@ export const crearPrestamo = async (req, res) => {
             });
         }
 
-        // Verificar que la cuenta pertenezca al usuario
-        if (cuenta.usuarioId.toString() !== req.uid) {
-            return res.status(403).json({
-                success: false,
-                message: 'No tienes permiso para usar esta cuenta'
-            });
-        }
-
         // Calcular interés y monto de cuotas
         const tasa_interes = 12; // ejemplo 12%
         const total_con_interes = cantidad_prestada + (cantidad_prestada * tasa_interes / 100);

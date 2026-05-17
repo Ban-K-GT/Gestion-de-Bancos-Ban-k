@@ -67,6 +67,76 @@ export const getPrestamosPendientes = async (req, res) => {
   }
 };
 
+// Listar préstamos aprobados
+export const getPrestamosAprobados = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const filter = { estado: 'aprobado' };
+
+    const prestamos = await Prestamos.find(filter)
+      .populate('cuentaId', 'numeroCuenta tipoCuenta usuarioId')
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ fecha: -1 });
+
+    const total = await Prestamos.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      message: 'Préstamos aprobados obtenidos exitosamente',
+      data: prestamos,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalRecords: total,
+        limit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener préstamos aprobados',
+      error: error.message,
+    });
+  }
+};
+
+
+// Listar préstamos denegados
+export const getPrestamosDenegados = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const filter = { estado: 'rechazado' };
+
+    const prestamos = await Prestamos.find(filter)
+      .populate('cuentaId', 'numeroCuenta tipoCuenta usuarioId')
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ fecha: -1 });
+
+    const total = await Prestamos.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      message: 'Préstamos denegados obtenidos exitosamente',
+      data: prestamos,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalRecords: total,
+        limit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener préstamos denegados',
+      error: error.message,
+    });
+  }
+};
+
+
 // Obtener préstamo por ID
 export const getPrestamoById = async (req, res) => {
   try {
@@ -141,16 +211,19 @@ export const getPrestamosByCuenta = async (req, res) => {
 };
 
 // Cambiar estado de préstamo (aprobar o rechazar)
-export const changePrestamoStatus = async (req, res) => {
+export const aprobarPrestamo = async (req, res) => {
   try {
     const { id } = req.params;
-    const action = req.url.includes('/aprobar') ? 'aprobado' : 'rechazado';
-
     const prestamo = await Prestamos.findByIdAndUpdate(
       id,
-      { estado: action },
+      { estado: 'aprobado' },
       { new: true }
     );
+
+    // Actualizar el saldo de la cuenta
+    const cuenta = await mongoose.model('Cuentas').findById(prestamo.cuentaId);
+    cuenta.saldo += prestamo.cantidad_prestada;
+    await cuenta.save();
 
     if (!prestamo) {
       return res.status(404).json({
@@ -158,16 +231,43 @@ export const changePrestamoStatus = async (req, res) => {
         message: 'Préstamo no encontrado',
       });
     }
-
     res.status(200).json({
       success: true,
-      message: `Préstamo ${action} exitosamente`,
+      message: 'Préstamo aprobado exitosamente',
       data: prestamo,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al cambiar el estado del préstamo',
+      message: 'Error al aprobar el préstamo',
+      error: error.message,
+    });
+  }
+};
+
+export const denegarPrestamo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const prestamo = await Prestamos.findByIdAndUpdate(
+      id,
+      { estado: 'rechazado' },
+      { new: true }
+    );
+    if (!prestamo) {
+      return res.status(404).json({
+        success: false,
+        message: 'Préstamo no encontrado',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Préstamo denegado exitosamente',
+      data: prestamo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al denegar el préstamo',
       error: error.message,
     });
   }

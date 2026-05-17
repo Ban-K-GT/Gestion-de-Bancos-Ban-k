@@ -41,13 +41,6 @@ export const crearCompra = async (req, res) => {
             });
         }
 
-        if (cuenta.usuarioId.toString() !== req.uid) {
-            return res.status(403).json({
-                success: false,
-                message: 'No tienes permiso para usar esta cuenta'
-            });
-        }
-
         if (!cuenta.isActive) {
             return res.status(400).json({
                 success: false,
@@ -104,6 +97,16 @@ export const crearCompra = async (req, res) => {
                 message: 'Saldo insuficiente'
             });
         }
+
+        if (productoDB.stock < cantidadNumero) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cantidad insuficiente'
+            });
+        }
+
+        productoDB.stock -= cantidadNumero;
+        await productoDB.save();
 
         cuenta.saldo -= total;
         await cuenta.save();
