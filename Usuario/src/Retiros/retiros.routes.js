@@ -23,6 +23,6 @@ router.get('/fecha/:year/:month', validateGetRetirosByDate, getRetirosByYearAndM
 
 // Obtener retiros por numero de cuenta
 router.get('/cuenta/:numeroCuenta', validateGetRetirosByCuenta, getRetirosByCuenta);
-router.post('/', validateJWT, crearRetiro);
+router.post('/', crearRetiro);
 
 export default router;
