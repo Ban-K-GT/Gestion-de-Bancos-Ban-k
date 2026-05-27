@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validateJWT } from '../../middlewares/validate-jwt.js';
+// import { validateJWT } from '../../middlewares/validate-jwt.js';
 import {
     getMisDepositos,
     getMisDepositosPorCuenta,
