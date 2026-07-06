@@ -5,7 +5,8 @@ import {
     getRetiros,
     getRetirosByYearAndMonth,
     getRetirosByCuenta,
-    crearRetiro
+    crearRetiro,
+    getMisRetiros
 } from './retiros.controller.js';
 import {
     validateGetRetirosByDate,
@@ -21,8 +22,10 @@ router.get('/', getRetiros);
 // Obtener retiros por año y mes
 router.get('/fecha/:year/:month', validateGetRetirosByDate, getRetirosByYearAndMonth);
 
+router.get('/mis-retiros', validateJWT, getMisRetiros);
+
 // Obtener retiros por numero de cuenta
 router.get('/cuenta/:numeroCuenta', validateGetRetirosByCuenta, getRetirosByCuenta);
-router.post('/', crearRetiro);
+router.post('/', validateJWT, crearRetiro);
 
 export default router;

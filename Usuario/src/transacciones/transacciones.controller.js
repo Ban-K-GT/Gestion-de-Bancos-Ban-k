@@ -2,6 +2,8 @@
 import mongoose from 'mongoose';
 import Transacciones from './transacciones.model.js';
 import Cuentas from '../cuenta/cuenta.model.js';
+import { getUserEmailById } from '../utils/pg.service.js';
+import { sendTransferEmail } from '../utils/email.service.js';
 
 /* =========================================
    CREAR TRANSACCIÓN
@@ -81,6 +83,21 @@ export const crearTransaccion = async (req, res) => {
 
         await nuevaTransaccion.save();
 
+        // Enviar correos en segundo plano (no bloquean la respuesta)
+        try {
+            const emailOrigen = await getUserEmailById(cuentaOrigen.usuarioId);
+            const emailDestino = await getUserEmailById(cuentaDestino.usuarioId);
+
+            if (emailOrigen) {
+                sendTransferEmail(emailOrigen, amount, 'sender');
+            }
+            if (emailDestino) {
+                sendTransferEmail(emailDestino, amount, 'receiver');
+            }
+        } catch (mailError) {
+            console.error('Error enviando correos de transferencia:', mailError);
+        }
+
         return res.status(201).json({
             success: true,
             message: 'Transferencia realizada correctamente',
@@ -112,12 +129,12 @@ export const obtenerMisTransacciones = async (req, res) => {
             });
         }
 
-        const idsCuenta = cuentasUsuario.map(c => c._id);
+        const numerosCuenta = cuentasUsuario.map(c => c.numeroCuenta);
 
         const transacciones = await Transacciones.find({
             $or: [
-                { idFromUsuario: { $in: idsCuenta } },
-                { idToUsuario: { $in: idsCuenta } }
+                { numeroCuentaOrigen: { $in: numerosCuenta } },
+                { numeroCuentaDestino: { $in: numerosCuenta } }
             ]
         }).sort({ date: -1 });
 
@@ -162,8 +179,8 @@ export const obtenerTransaccionesPorCuenta = async (req, res) => {
 
         const transacciones = await Transacciones.find({
             $or: [
-                { idFromUsuario: cuenta._id },
-                { idToUsuario: cuenta._id }
+                { numeroCuentaOrigen: cuenta.numeroCuenta },
+                { numeroCuentaDestino: cuenta.numeroCuenta }
             ]
         }).sort({ date: -1 });
 
@@ -207,7 +224,7 @@ export const obtenerTransaccionesRecibidas = async (req, res) => {
         }
 
         const transacciones = await Transacciones.find({
-            idToUsuario: cuenta._id
+            numeroCuentaDestino: cuenta.numeroCuenta
         }).sort({ date: -1 });
 
         return res.status(200).json({
@@ -250,7 +267,7 @@ export const obtenerTransaccionesEnviadas = async (req, res) => {
         }
 
         const transacciones = await Transacciones.find({
-            idFromUsuario: cuenta._id
+            numeroCuentaOrigen: cuenta.numeroCuenta
         }).sort({ date: -1 });
 
         return res.status(200).json({

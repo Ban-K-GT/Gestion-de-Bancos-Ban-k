@@ -12,7 +12,7 @@ import {
     validateCuentaStatusChange,
     validateGetCuentaById,
 } from '../../middlewares/cuenta-validation.js';
-// import { validateJWT } from '../../middlewares/validate-jwt.js';
+import { validateJWT } from '../../middlewares/validate-jwt.js';
 
 const router = Router();
 
@@ -32,7 +32,7 @@ router.put(
 
 router.put('/:id/activar', validateCuentaStatusChange, changeCuentaStatus);
 router.put('/:id/desactivar', validateCuentaStatusChange, changeCuentaStatus);
-router.get('/mis-cuentas', getMisCuentas);
+router.get('/mis-cuentas', validateJWT, getMisCuentas);
 router.get('/:id', validateGetCuentaById, getCuentaById);
 
 export default router;

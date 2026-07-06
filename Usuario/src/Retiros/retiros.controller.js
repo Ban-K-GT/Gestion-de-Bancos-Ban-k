@@ -2,6 +2,8 @@
 
 import Retiro from './retiros.model.js';
 import Cuentas from '../cuenta/cuenta.model.js';
+import { getUserEmailById } from '../utils/pg.service.js';
+import { sendWithdrawalEmail } from '../utils/email.service.js';
 
 // Listar todos los retiros con paginación
 export const getRetiros = async (req, res) => {
@@ -97,12 +99,12 @@ export const getRetirosByCuenta = async (req, res) => {
 // Crear un retiro y restar del saldo
 export const crearRetiro = async (req, res) => {
     try {
-        const { cuentaId, amount, account_number } = req.body;
+        const { amount, account_number } = req.body;
 
-        if (!cuentaId || !amount || !account_number) {
+        if (!amount || !account_number) {
             return res.status(400).json({
                 success: false,
-                message: 'Cuenta, monto y número de cuenta son obligatorios'
+                message: 'Monto y número de cuenta son obligatorios'
             });
         }
 
@@ -113,13 +115,20 @@ export const crearRetiro = async (req, res) => {
             });
         }
 
-        // Buscar la cuenta usando el modelo importado
-        const cuenta = await Cuentas.findById(cuentaId);
+        // Buscar la cuenta usando el numero de cuenta
+        const cuenta = await Cuentas.findOne({ numeroCuenta: account_number });
 
         if (!cuenta) {
             return res.status(404).json({
                 success: false,
-                message: 'Cuenta no encontrada'
+                message: `No se encontró la cuenta con el número ${account_number}`
+            });
+        }
+
+        if (cuenta.usuarioId.toString() !== req.uid) {
+            return res.status(403).json({
+                success: false,
+                message: 'No tienes permiso para retirar de esta cuenta'
             });
         }
 
@@ -144,6 +153,16 @@ export const crearRetiro = async (req, res) => {
 
         await retiro.save();
 
+        // Enviar correo al propietario de la cuenta
+        try {
+            const emailRetiro = await getUserEmailById(cuenta.usuarioId);
+            if (emailRetiro) {
+                sendWithdrawalEmail(emailRetiro, amount);
+            }
+        } catch (mailError) {
+            console.error('Error enviando correo de retiro:', mailError);
+        }
+
         return res.status(201).json({
             success: true,
             message: 'Retiro realizado y saldo actualizado correctamente',
@@ -155,6 +174,39 @@ export const crearRetiro = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: 'Error al crear el retiro',
+            error: error.message
+        });
+    }
+};
+
+export const getMisRetiros = async (req, res) => {
+    try {
+        // Obtener todas las cuentas del usuario
+        const cuentasUsuario = await Cuentas.find({ usuarioId: req.uid });
+        if (!cuentasUsuario.length) {
+            return res.status(200).json({
+                success: true,
+                total: 0,
+                retiros: []
+            });
+        }
+
+        const cuentasIds = cuentasUsuario.map(c => c._id);
+
+        const retiros = await Retiro.find({ cuentaId: { $in: cuentasIds } })
+            .populate('cuentaId', 'numeroCuenta tipoCuenta')
+            .sort({ date: -1 });
+
+        return res.status(200).json({
+            success: true,
+            total: retiros.length,
+            retiros
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error al obtener los retiros del usuario',
             error: error.message
         });
     }

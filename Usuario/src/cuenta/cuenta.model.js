@@ -4,8 +4,7 @@ import mongoose from "mongoose";
 
 const cuentasSchema = new mongoose.Schema({
     usuarioId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario',
+        type: String,
         required: true
     },
     tipoCuenta: {

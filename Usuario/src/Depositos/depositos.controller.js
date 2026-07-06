@@ -3,6 +3,8 @@
 import mongoose from 'mongoose';
 import Depositos from './depositos.model.js';
 import Cuentas from '../cuenta/cuenta.model.js'; // tu modelo de cuentas se llama "Cuenta"
+import { getUserEmailById } from '../utils/pg.service.js';
+import { sendDepositEmail } from '../utils/email.service.js';
 
 // ======================================================
 // OBTENER TODOS LOS DEPÓSITOS DE UN USUARIO (TODAS SUS CUENTAS)
@@ -170,6 +172,16 @@ export const crearDeposito = async (req, res) => {
         // Agregar saldo a la cuenta destino
         cuentaDestino.saldo += Number(amount);
         await cuentaDestino.save();
+
+        // Enviar correo al propietario de la cuenta destino
+        try {
+            const emailDestino = await getUserEmailById(cuentaDestino.usuarioId);
+            if (emailDestino) {
+                sendDepositEmail(emailDestino, amount);
+            }
+        } catch (mailError) {
+            console.error('Error enviando correo de depósito:', mailError);
+        }
 
         res.status(201).json({
             success: true,
