@@ -16,6 +16,7 @@ import comprasRoutes from '../src/compras/compras.routes.js';
 import retirosRoutes from '../src/retiros/retiros.routes.js';
 import prestamosRoutes from '../src/prestamos/prestamos.routes.js';
 import productosRoutes from '../src/productos/productos.routes.js';
+import divisasRoutes from '../src/divisas/divisas.routes.js';
 
 const BASE_URL = '/Ban-k/v1/admin';
 
@@ -39,6 +40,7 @@ const routes = (app) => {
     app.use(`${BASE_URL}/retiros`, retirosRoutes);
     app.use(`${BASE_URL}/prestamos`, prestamosRoutes);
     app.use(`${BASE_URL}/productos`, productosRoutes);
+    app.use(`${BASE_URL}/divisas`, divisasRoutes);
 };
 
 // Iniciar servidor

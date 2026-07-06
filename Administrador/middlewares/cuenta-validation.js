@@ -3,9 +3,6 @@ import { checkValidators } from './check-validators.js';
 
 // Validaciones para crear cuentas
 export const validateCreateCuenta = [
-  body('usuarioId')
-    .isMongoId()
-    .withMessage('ID de usuario no válido'),
   body('tipoCuenta')
     .trim()
     .notEmpty()
@@ -24,9 +21,6 @@ export const validateCreateCuenta = [
 
 // Validaciones para actualizar cuentas
 export const validateUpdateCuentaRequest = [
-  param('id')
-    .isMongoId()
-    .withMessage('ID debe ser un ObjectId válido de MongoDB'),
 
   body('nombreCompleto')
     .optional()

@@ -50,7 +50,6 @@ export const getCuentaById = async (req, res) => {
     const { id } = req.params;
 
     const cuenta = await Cuentas.findById(id);
-    const usuario = await Usuarios.findById(cuenta.usuarioId);
 
     if (!cuenta) {
       return res.status(404).json({
@@ -61,7 +60,7 @@ export const getCuentaById = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: { cuenta, usuario: usuario.name },
+      data: { cuenta, usuario: cuenta.usuarioId },
     });
   } catch (error) {
     res.status(500).json({
@@ -76,15 +75,8 @@ export const getCuentaById = async (req, res) => {
 export const getCuentaByUsuarioId = async (req, res) => {
   try {
     const { usuarioId } = req.params;
-    const usuario = await Usuarios.findById(usuarioId);
-    if (!usuario) {
-      return res.status(404).json({
-        success: false,
-        message: 'Usuario no encontrado',
-      });
-    }
 
-    const cuentas = await Cuentas.find({ usuarioId: usuario._id });
+    const cuentas = await Cuentas.find({ usuarioId });
 
     if (!cuentas || cuentas.length === 0) {
       return res.status(404).json({
@@ -96,7 +88,7 @@ export const getCuentaByUsuarioId = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: { cuentas, usuario: usuario.name },
+      data: { cuentas, usuario: usuarioId },
     });
   } catch (error) {
     res.status(500).json({
@@ -112,13 +104,7 @@ export const createCuenta = async (req, res) => {
   try {
     const cuentaData = req.body;
 
-    const usuario = await Usuarios.findById(cuentaData.usuarioId);
-    if (usuario.monthly_income < 100) {
-      return res.status(404).json({
-        success: false,
-        message: 'El usuario no cumple con los requisitos para crear una cuenta',
-      });
-    }
+    // Ya no verificamos Usuarios localmente porque los usuarios están en auth-service
 
     // Generar un número de cuenta único y aleatorio de 10 a 12 dígitos
     cuentaData.numeroCuenta = Math.floor(1000000000 + Math.random() * 9000000000).toString();
