@@ -1,6 +1,6 @@
 // Importaciones
 import dotenv from 'dotenv';
-import { initServer } from './configs/app.js';
+import { app, initServer } from './configs/app.js';
 
 // Configurar las vaibles de enetorno
 dotenv.config();
@@ -15,6 +15,9 @@ process.on('unhandledRejection', (reason, promise) => {
     console.log(reason, promise);
     process.exit(1);
 });
+
 // Iniciar el servidor
 console.log('Iniciando servidor de Ban-k....');
-initServer();
+await initServer();
+
+export default app;
