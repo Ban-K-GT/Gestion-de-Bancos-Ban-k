@@ -7,7 +7,7 @@ import morgan from 'morgan';
 import { cordOptions } from './cors-configuration.js';
 import { dbConnection } from './db.js';
 import { createDefaultAdmin } from '../src/admin/admin.controller.js';
-import adminRoutes from '../src/admin/admin.routes.js';
+import adminRoutes from '../src/Admin/admin.routes.js';
 import cuentaRoutes from '../src/cuenta/cuenta.routes.js';
 import transaccionRoutes from '../src/transacciones/transacciones.routes.js';
 import usuariosRoutes from '../src/usuarios/usuarios.routes.js'
