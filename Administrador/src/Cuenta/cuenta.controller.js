@@ -1,5 +1,5 @@
 import Cuentas from './cuenta.model.js';
-import Usuarios from '../usuarios/usuarios.model.js';
+import Usuarios from '../Usuarios/usuarios.model.js';
 
 // Obtener todas las cuentas con paginación y filtros
 export const getCuentas = async (req, res) => {
