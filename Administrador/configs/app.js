@@ -8,14 +8,14 @@ import { cordOptions } from './cors-configuration.js';
 import { dbConnection } from './db.js';
 import { createDefaultAdmin } from '../src/Admin/admin.controller.js';
 import adminRoutes from '../src/Admin/admin.routes.js';
-import cuentaRoutes from '../src/cuenta/cuenta.routes.js';
-import transaccionRoutes from '../src/transacciones/transacciones.routes.js';
-import usuariosRoutes from '../src/usuarios/usuarios.routes.js'
-import depositosRoutes from '../src/depositos/depositos.routes.js';
+import cuentaRoutes from '../src/Cuenta/cuenta.routes.js';
+import transaccionRoutes from '../src/Transacciones/transacciones.routes.js';
+import usuariosRoutes from '../src/Usuarios/usuarios.routes.js'
+import depositosRoutes from '../src/Depositos/depositos.routes.js';
 import comprasRoutes from '../src/compras/compras.routes.js';
-import retirosRoutes from '../src/retiros/retiros.routes.js';
-import prestamosRoutes from '../src/prestamos/prestamos.routes.js';
-import productosRoutes from '../src/productos/productos.routes.js';
+import retirosRoutes from '../src/Retiros/retiros.routes.js';
+import prestamosRoutes from '../src/Prestamos/prestamos.routes.js';
+import productosRoutes from '../src/Productos/productos.routes.js';
 import divisasRoutes from '../src/divisas/divisas.routes.js';
 
 const BASE_URL = '/Ban-k/v1/admin';
