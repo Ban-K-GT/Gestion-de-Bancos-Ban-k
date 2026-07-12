@@ -43,10 +43,10 @@ const routes = (app) => {
     app.use(`${BASE_URL}/divisas`, divisasRoutes);
 };
 
-// Iniciar servidor
-const initServer = async (app) => {
+export const app = express();
 
-    app = express();
+// Iniciar servidor
+export const initServer = async () => {
     const PORT = process.env.PORT || 3001;
 
     try {
@@ -55,10 +55,13 @@ const initServer = async (app) => {
         middlewares(app);
         routes(app);
 
-        app.listen(PORT, () => {
-            console.log(`El servidor está en el puerto ${PORT}`);
-            console.log(`Base URL : http://localhost:${PORT}${BASE_URL}`);
-        });
+        // Solo escuchar en puerto si NO estamos en Vercel
+        if (process.env.NODE_ENV !== 'production') {
+            app.listen(PORT, () => {
+                console.log(`El servidor está en el puerto ${PORT}`);
+                console.log(`Base URL : http://localhost:${PORT}${BASE_URL}`);
+            });
+        }
 
         app.get(`${BASE_URL}/health`, (req, res) => {
             res.status(200).json({
@@ -72,5 +75,3 @@ const initServer = async (app) => {
         console.log(error);
     }
 }
-
-export { initServer };
