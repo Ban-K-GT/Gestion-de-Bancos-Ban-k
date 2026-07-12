@@ -2,18 +2,17 @@
 import dotenv from 'dotenv';
 import { app, initServer } from './configs/app.js';
 
-// Configurar las vaibles de enetorno
+// Configurar las variables de entorno
 dotenv.config();
 
-// errores no capturados
+// Errores no capturados (Solo los pintamos en consola, NO matamos el proceso)
 process.on('uncaughtException', (error) => {
-    console.log(error);
-    process.exit(1);
+    console.error('Uncaught Exception:', error);
 });
-// errores no manejados en promesas
+
+// Errores no manejados en promesas (Solo los pintamos en consola, NO matamos el proceso)
 process.on('unhandledRejection', (reason, promise) => {
-    console.log(reason, promise);
-    process.exit(1);
+    console.error('Unhandled Rejection en:', promise, 'razón:', reason);
 });
 
 // Iniciar el servidor
